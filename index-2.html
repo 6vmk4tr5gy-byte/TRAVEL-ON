@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Travel On — Checkout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sand: #F5F0E8;
+    --sand-dark: #EDE6D6;
+    --ink: #1A1612;
+    --ink-mid: #4A4540;
+    --ink-light: #8A857F;
+    --accent: #C8935A;
+    --accent-light: #F0E0CC;
+    --white: #FDFCFA;
+    --border: rgba(26,22,18,0.12);
+    --border-strong: rgba(26,22,18,0.25);
+    --success: #2D6A4F;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--sand);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-steps {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--ink-light);
+  }
+  .nav-steps .step { display: flex; align-items: center; gap: 6px; }
+  .nav-steps .step.active { color: var(--ink); font-weight: 500; }
+  .nav-steps .step.done { color: var(--success); }
+  .nav-steps .sep { color: var(--border-strong); }
+  .nav-secure {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--ink-light);
+  }
+  .nav-secure svg { width: 14px; height: 14px; stroke: var(--accent); }
+
+  /* LAYOUT */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  /* LEFT COLUMN */
+  .left { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .section-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 1.2rem;
+  }
+  .section-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--ink); color: var(--white);
+    font-size: 13px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-num.done { background: var(--success); }
+  .section-title { font-family: var(--font-display); font-size: 17px; color: var(--ink); }
+
+  /* SEARCH BAR */
+  .search-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 1px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--border);
+  }
+  .search-field {
+    background: var(--white);
+    padding: 12px 14px;
+    display: flex; flex-direction: column; gap: 3px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .search-field:hover { background: var(--sand); }
+  .search-field label { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-light); cursor: pointer; }
+  .search-field input, .search-field select {
+    border: none; background: transparent; font-family: var(--font-body);
+    font-size: 14px; font-weight: 400; color: var(--ink);
+    outline: none; width: 100%; cursor: pointer;
+  }
+  .search-field select option { background: var(--white); }
+  .search-btn {
+    background: var(--accent); color: var(--white);
+    border: none; padding: 0 20px; font-family: var(--font-body);
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: opacity 0.15s;
+    white-space: nowrap;
+  }
+  .search-btn:hover { opacity: 0.88; }
+  .search-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+  /* PROPERTY TYPE TABS */
+  .type-tabs {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem;
+  }
+  .type-tab {
+    padding: 7px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 100px;
+    font-size: 13px; font-weight: 400;
+    background: transparent; color: var(--ink-mid);
+    cursor: pointer; font-family: var(--font-body);
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .type-tab svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+  .type-tab:hover { border-color: var(--ink); color: var(--ink); }
+  .type-tab.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
+
+  /* SELECTED PROPERTY CARD */
+  .property-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: flex;
+  }
+  .property-img {
+    width: 120px; flex-shrink: 0;
+    background: var(--sand-dark);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .property-img-placeholder {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    color: var(--ink-light); font-size: 11px;
+  }
+  .property-img-placeholder svg { width: 28px; height: 28px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+  .property-info { padding: 14px 16px; flex: 1; }
+  .property-name { font-family: var(--font-display); font-size: 16px; margin-bottom: 4px; }
+  .property-location { font-size: 12px; color: var(--ink-light); margin-bottom: 8px; display: flex; align-items: center; gap: 4px; }
+  .property-location svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .property-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    font-size: 11px; padding: 3px 8px;
+    background: var(--sand); border-radius: 100px;
+    color: var(--ink-mid); border: 1px solid var(--border);
+  }
+  .tag.highlight { background: var(--accent-light); color: #7A4E20; border-color: #D4A87A; }
+  .property-rating { display: flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 12px; color: var(--ink-mid); }
+  .stars { color: var(--accent); font-size: 12px; letter-spacing: 1px; }
+  .change-btn { background: none; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 5px 10px; font-size: 12px; font-family: var(--font-body); color: var(--ink-mid); cursor: pointer; align-self: flex-start; margin: 14px 14px 14px 0; }
+  .change-btn:hover { background: var(--sand); }
+
+  /* ROOM SELECTOR */
+  .room-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .room-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    position: relative;
+  }
+  .room-card:hover { border-color: var(--border-strong); }
+  .room-card.selected { border: 2px solid var(--ink); background: var(--sand); }
+  .room-name { font-weight: 500; font-size: 14px; margin-bottom: 4px; }
+  .room-desc { font-size: 12px; color: var(--ink-light); margin-bottom: 8px; line-height: 1.4; }
+  .room-features { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .room-feat { font-size: 11px; color: var(--ink-mid); display: flex; align-items: center; gap: 3px; }
+  .room-feat svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .room-price-line { display: flex; align-items: baseline; gap: 4px; }
+  .room-price { font-size: 16px; font-weight: 500; color: var(--ink); }
+  .room-night { font-size: 11px; color: var(--ink-light); }
+  .selected-badge {
+    position: absolute; top: 10px; right: 10px;
+    background: var(--ink); color: var(--white);
+    font-size: 10px; padding: 2px 7px; border-radius: 100px; font-weight: 500;
+  }
+
+  /* FORM FIELDS */
+  .field-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field + .field { margin-top: 12px; }
+  .field-grid-2 .field { margin-top: 0; }
+  .field-grid-2 { margin-bottom: 12px; }
+  .field label { font-size: 12px; font-weight: 500; color: var(--ink-mid); letter-spacing: 0.02em; }
+  .field input, .field select, .field textarea {
+    padding: 10px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--sand);
+    color: var(--ink); font-family: var(--font-body); font-size: 14px;
+    outline: none; transition: border-color 0.15s, background 0.15s;
+    width: 100%;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--accent); background: var(--white);
+  }
+  .field textarea { resize: vertical; min-height: 72px; }
+
+  /* PAYMENT */
+  .pay-tabs { display: flex; gap: 8px; margin-bottom: 1rem; }
+  .pay-tab {
+    flex: 1; padding: 10px; border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm); background: var(--white);
+    font-family: var(--font-body); font-size: 13px; color: var(--ink-mid);
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
+    transition: all 0.15s;
+  }
+  .pay-tab svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+  .pay-tab:hover { border-color: var(--ink); color: var(--ink); }
+  .pay-tab.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
+  #alt-pay-msg {
+    padding: 16px; text-align: center; font-size: 14px; color: var(--ink-light);
+    border: 1px dashed var(--border-strong); border-radius: var(--radius-sm);
+    background: var(--sand);
+  }
+
+  /* RIGHT COLUMN */
+  .right { display: flex; flex-direction: column; gap: 1rem; }
+
+  .summary-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: sticky; top: 76px;
+  }
+  .summary-hero {
+    background: var(--ink);
+    padding: 1.2rem 1.5rem;
+    color: var(--white);
+  }
+  .summary-hero-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.6; margin-bottom: 4px; }
+  .summary-hero-title { font-family: var(--font-display); font-size: 20px; margin-bottom: 2px; }
+  .summary-hero-sub { font-size: 13px; opacity: 0.7; }
+  .summary-body { padding: 1.2rem 1.5rem; }
+  .sum-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+  }
+  .sum-row:last-of-type { border-bottom: none; }
+  .sum-icon { color: var(--ink-light); margin-top: 2px; flex-shrink: 0; }
+  .sum-icon svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+  .sum-key { font-size: 11px; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.06em; }
+  .sum-val { font-size: 14px; font-weight: 500; color: var(--ink); margin-top: 1px; }
+  .sum-val.muted { color: var(--ink-light); font-weight: 400; font-style: italic; }
+
+  .price-breakdown { padding: 1rem 1.5rem; border-top: 1px solid var(--border); }
+  .pr-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink-mid); margin-bottom: 8px; }
+  .pr-row.green { color: var(--success); }
+  .pr-total { display: flex; justify-content: space-between; font-size: 17px; font-weight: 500; color: var(--ink); padding-top: 10px; border-top: 1px solid var(--border-strong); margin-top: 4px; }
+
+  .confirm-btn {
+    width: 100%; padding: 15px;
+    background: var(--accent); color: var(--white);
+    border: none; border-radius: var(--radius-md);
+    font-family: var(--font-display); font-size: 16px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: opacity 0.15s, transform 0.1s;
+    margin: 1rem 1.5rem; width: calc(100% - 3rem);
+  }
+  .confirm-btn:hover { opacity: 0.88; }
+  .confirm-btn:active { transform: scale(0.99); }
+  .confirm-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+  .trust-strip {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 0 1.5rem 1.2rem;
+  }
+  .trust-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink-light); }
+  .trust-item svg { width: 13px; height: 13px; stroke: var(--accent); fill: none; stroke-width: 2; flex-shrink: 0; }
+
+  /* FOOTER */
+  footer {
+    text-align: center; padding: 2rem;
+    font-size: 12px; color: var(--ink-light);
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .section-card { animation: fadeUp 0.4s ease both; }
+  .section-card:nth-child(1) { animation-delay: 0.05s; }
+  .section-card:nth-child(2) { animation-delay: 0.10s; }
+  .section-card:nth-child(3) { animation-delay: 0.15s; }
+  .section-card:nth-child(4) { animation-delay: 0.20s; }
+  .summary-card { animation: fadeUp 0.4s 0.25s ease both; }
+
+  /* RESPONSIVE */
+  @media (max-width: 860px) {
+    .page { grid-template-columns: 1fr; }
+    .summary-card { position: static; }
+    .search-bar { grid-template-columns: 1fr 1fr; }
+    .search-btn { grid-column: span 2; justify-content: center; padding: 12px; }
+  }
+  @media (max-width: 540px) {
+    nav { padding: 0 1rem; }
+    .nav-steps { display: none; }
+    .page { padding: 1rem 1rem 3rem; }
+    .room-grid { grid-template-columns: 1fr; }
+    .field-grid-2 { grid-template-columns: 1fr; }
+    .search-bar { grid-template-columns: 1fr; }
+    .search-btn { grid-column: span 1; }
+    .pay-tabs { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Travel<span>On</span></div>
+  <div class="nav-steps">
+    <div class="step done">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      Search
+    </div>
+    <span class="sep">›</span>
+    <div class="step active">Checkout</div>
+    <span class="sep">›</span>
+    <div class="step">Confirmation</div>
+  </div>
+  <div class="nav-secure">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    Secure checkout
+  </div>
+</nav>
+
+<div class="page">
+  <div class="left">
+
+    <!-- STEP 1: Search -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-num done">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <span class="section-title">Where & when</span>
+      </div>
+
+      <div class="type-tabs">
+        <button class="type-tab active" onclick="setType(this)">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          Hotels
+        </button>
+        <button class="type-tab" onclick="setType(this)">
+          <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path></svg>
+          Resorts
+        </button>
+        <button class="type-tab" onclick="setType(this)">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+          Villas
+        </button>
+        <button class="type-tab" onclick="setType(this)">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg>
+          Hostels
+        </button>
+        <button class="type-tab" onclick="setType(this)">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.55 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.02z"></path></svg>
+          Apartments
+        </button>
+      </div>
+
+      <div class="search-bar">
+        <div class="search-field">
+          <label for="dest">Destination</label>
+          <input type="text" id="dest" value="Montego Bay, Jamaica" placeholder="City or property">
+        </div>
+        <div class="search-field">
+          <label for="checkin">Check-in</label>
+          <input type="date" id="checkin" value="2026-06-20">
+        </div>
+        <div class="search-field">
+          <label for="checkout-date">Check-out</label>
+          <input type="date" id="checkout-date" value="2026-06-25">
+        </div>
+        <button class="search-btn">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          Search
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Property -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <span class="section-title">Your property</span>
+      </div>
+
+      <div class="property-card">
+        <div class="property-img">
+          <div class="property-img-placeholder">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+            <span>Property photo</span>
+          </div>
+        </div>
+        <div class="property-info">
+          <div class="property-name" id="prop-name">Sunset Bay Resort & Spa</div>
+          <div class="property-location">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span id="prop-loc">Montego Bay, Jamaica</span>
+          </div>
+          <div class="property-tags">
+            <span class="tag">5-star</span>
+            <span class="tag highlight">Free cancellation</span>
+            <span class="tag">Breakfast included</span>
+            <span class="tag">Pool</span>
+          </div>
+          <div class="property-rating">
+            <span class="stars">★★★★★</span>
+            <span>4.8 · 312 reviews</span>
+          </div>
+        </div>
+        <button class="change-btn" onclick="changeProperty()">Change</button>
+      </div>
+
+      <div style="margin-top:1rem;">
+        <div class="section-header" style="margin-bottom:0.8rem;">
+          <span style="font-size:13px;font-weight:500;color:var(--ink-mid);">Select a room type</span>
+        </div>
+        <div class="room-grid" id="room-grid">
+          <div class="room-card selected" data-price="220" data-name="Deluxe Ocean View" onclick="selectRoom(this)">
+            <div class="selected-badge">Selected</div>
+            <div class="room-name">Deluxe Ocean View</div>
+            <div class="room-desc">King bed, private balcony with panoramic ocean views</div>
+            <div class="room-features">
+              <span class="room-feat"><svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9z"/><path d="M5 13l2 2a7.074 7.074 0 0 1 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/><circle cx="12" cy="17" r="2"/></svg> Free WiFi</span>
+              <span class="room-feat"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> Smart TV</span>
+              <span class="room-feat"><svg viewBox="0 0 24 24"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3z"/></svg> AC</span>
+            </div>
+            <div class="room-price-line">
+              <span class="room-price">$220</span>
+              <span class="room-night">/ night</span>
+            </div>
+          </div>
+          <div class="room-card" data-price="175" data-name="Standard Garden" onclick="selectRoom(this)">
+            <div class="room-name">Standard Garden</div>
+            <div class="room-desc">Queen bed, garden-facing view, peaceful and bright</div>
+            <div class="room-features">
+              <span class="room-feat"><svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9z"/><path d="M5 13l2 2a7.074 7.074 0 0 1 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/><circle cx="12" cy="17" r="2"/></svg> Free WiFi</span>
+              <span class="room-feat"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> Smart TV</span>
+            </div>
+            <div class="room-price-line">
+              <span class="room-price">$175</span>
+              <span class="room-night">/ night</span>
+            </div>
+          </div>
+          <div class="room-card" data-price="310" data-name="Junior Suite" onclick="selectRoom(this)">
+            <div class="room-name">Junior Suite</div>
+            <div class="room-desc">King bed, separate lounge, sea-facing terrace</div>
+            <div class="room-features">
+              <span class="room-feat"><svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9z"/><path d="M5 13l2 2a7.074 7.074 0 0 1 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/><circle cx="12" cy="17" r="2"/></svg> Free WiFi</span>
+              <span class="room-feat"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> Spa access</span>
+              <span class="room-feat"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Late checkout</span>
+            </div>
+            <div class="room-price-line">
+              <span class="room-price">$310</span>
+              <span class="room-night">/ night</span>
+            </div>
+          </div>
+          <div class="room-card" data-price="480" data-name="Presidential Suite" onclick="selectRoom(this)">
+            <div class="room-name">Presidential Suite</div>
+            <div class="room-desc">2 bedrooms, private pool, butler service included</div>
+            <div class="room-features">
+              <span class="room-feat"><svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9z"/><path d="M5 13l2 2a7.074 7.074 0 0 1 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/><circle cx="12" cy="17" r="2"/></svg> Free WiFi</span>
+              <span class="room-feat"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> All-inclusive</span>
+              <span class="room-feat"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Butler service</span>
+            </div>
+            <div class="room-price-line">
+              <span class="room-price">$480</span>
+              <span class="room-night">/ night</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: Guest Details -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <span class="section-title">Guest details</span>
+      </div>
+      <div class="field-grid-2">
+        <div class="field"><label>First name</label><input type="text" placeholder="Alex"></div>
+        <div class="field"><label>Last name</label><input type="text" placeholder="Morgan"></div>
+      </div>
+      <div class="field-grid-2">
+        <div class="field"><label>Email address</label><input type="email" placeholder="alex@email.com"></div>
+        <div class="field"><label>Phone number</label><input type="tel" placeholder="+1 (876) 000-0000"></div>
+      </div>
+      <div class="field-grid-2" style="margin-bottom:0;">
+        <div class="field">
+          <label>Number of guests</label>
+          <select>
+            <option>1 guest</option>
+            <option selected>2 guests</option>
+            <option>3 guests</option>
+            <option>4 guests</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Nationality</label>
+          <select>
+            <option>United States</option>
+            <option>Jamaica</option>
+            <option>United Kingdom</option>
+            <option>Canada</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" style="margin-top:12px;">
+        <label>Special requests (optional)</label>
+        <textarea placeholder="Early check-in, accessibility needs, room preferences..."></textarea>
+      </div>
+    </div>
+
+    <!-- STEP 4: Payment -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <span class="section-title">Payment</span>
+      </div>
+      <div class="pay-tabs">
+        <button class="pay-tab active" id="pt-card" onclick="setPayMethod('card')">
+          <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+          Credit / Debit Card
+        </button>
+        <button class="pay-tab" id="pt-paypal" onclick="setPayMethod('paypal')">
+          <svg viewBox="0 0 24 24"><path d="M17.5 7H7L5 19h4l.5-3h5c3 0 5-1.5 5-4.5C19.5 8.5 18.5 7 17.5 7z"></path><path d="M9 7l-1 5"></path></svg>
+          PayPal
+        </button>
+        <button class="pay-tab" id="pt-bank" onclick="setPayMethod('bank')">
+          <svg viewBox="0 0 24 24"><line x1="3" y1="22" x2="21" y2="22"></line><line x1="6" y1="18" x2="6" y2="11"></line><line x1="10" y1="18" x2="10" y2="11"></line><line x1="14" y1="18" x2="14" y2="11"></line><line x1="18" y1="18" x2="18" y2="11"></line><polygon points="12 2 20 7 4 7"></polygon></svg>
+          Bank Transfer
+        </button>
+      </div>
+
+      <div id="card-form">
+        <div class="field" style="margin-bottom:12px;">
+          <label>Card number</label>
+          <input type="text" placeholder="1234  5678  9012  3456" maxlength="19" oninput="formatCard(this)">
+        </div>
+        <div class="field-grid-2">
+          <div class="field"><label>Name on card</label><input type="text" placeholder="Alex Morgan"></div>
+          <div class="field-grid-2" style="margin-bottom:0;">
+            <div class="field"><label>Expiry</label><input type="text" placeholder="MM / YY" maxlength="7"></div>
+            <div class="field"><label>CVV</label><input type="text" placeholder="•••" maxlength="4"></div>
+          </div>
+        </div>
+      </div>
+      <div id="alt-pay-msg" style="display:none;"></div>
+    </div>
+
+  </div><!-- /left -->
+
+  <!-- RIGHT: SUMMARY -->
+  <div class="right">
+    <div class="summary-card">
+      <div class="summary-hero">
+        <div class="summary-hero-label">Your booking</div>
+        <div class="summary-hero-title" id="sum-prop">Sunset Bay Resort & Spa</div>
+        <div class="summary-hero-sub" id="sum-loc">Montego Bay, Jamaica</div>
+      </div>
+      <div class="summary-body">
+        <div class="sum-row">
+          <div class="sum-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></div>
+          <div>
+            <div class="sum-key">Dates</div>
+            <div class="sum-val" id="sum-dates">Jun 20 → Jun 25, 2026</div>
+          </div>
+        </div>
+        <div class="sum-row">
+          <div class="sum-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+          <div>
+            <div class="sum-key">Room</div>
+            <div class="sum-val" id="sum-room">Deluxe Ocean View</div>
+          </div>
+        </div>
+        <div class="sum-row">
+          <div class="sum-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+          <div>
+            <div class="sum-key">Guests</div>
+            <div class="sum-val">2 guests</div>
+          </div>
+        </div>
+        <div class="sum-row">
+          <div class="sum-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+          <div>
+            <div class="sum-key">Duration</div>
+            <div class="sum-val" id="sum-nights">5 nights</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="price-breakdown">
+        <div class="pr-row"><span id="pr-label">$220 × 5 nights</span><span id="pr-subtotal">$1,100.00</span></div>
+        <div class="pr-row"><span>Taxes & fees (12%)</span><span id="pr-tax">$132.00</span></div>
+        <div class="pr-row green"><span>Member discount</span><span>−$55.00</span></div>
+        <div class="pr-total"><span>Total</span><span id="pr-total">$1,177.00</span></div>
+      </div>
+
+      <button class="confirm-btn" onclick="confirmBooking()">
+        <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        Confirm booking
+      </button>
+
+      <div class="trust-strip">
+        <div class="trust-item">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          Free cancellation before Jun 18
+        </div>
+        <div class="trust-item">
+          <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+          No charge until check-in
+        </div>
+        <div class="trust-item">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 8 12 12 14 14"></polyline></svg>
+          Instant confirmation
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  &copy; 2026 TravelOn. All rights reserved. &nbsp;·&nbsp;
+  <a href="#">Privacy Policy</a> &nbsp;·&nbsp;
+  <a href="#">Terms of Service</a> &nbsp;·&nbsp;
+  <a href="#">Support</a>
+</footer>
+
+<script>
+  function setType(el) {
+    document.querySelectorAll('.type-tab').forEach(function(t){ t.classList.remove('active'); });
+    el.classList.add('active');
+  }
+
+  function selectRoom(el) {
+    document.querySelectorAll('.room-card').forEach(function(c){
+      c.classList.remove('selected');
+      var b = c.querySelector('.selected-badge');
+      if (b) b.remove();
+    });
+    el.classList.add('selected');
+    var badge = document.createElement('div');
+    badge.className = 'selected-badge'; badge.textContent = 'Selected';
+    el.appendChild(badge);
+    var price = parseInt(el.getAttribute('data-price'));
+    var name = el.getAttribute('data-name');
+    document.getElementById('sum-room').textContent = name;
+    updatePricing(price);
+  }
+
+  function updatePricing(price) {
+    var nights = 5;
+    var subtotal = price * nights;
+    var tax = Math.round(subtotal * 0.12);
+    var discount = Math.round(subtotal * 0.05);
+    var total = subtotal + tax - discount;
+    document.getElementById('pr-label').textContent = '$' + price + ' × ' + nights + ' nights';
+    document.getElementById('pr-subtotal').textContent = '$' + subtotal.toLocaleString() + '.00';
+    document.getElementById('pr-tax').textContent = '$' + tax.toLocaleString() + '.00';
+    document.getElementById('pr-total').textContent = '$' + total.toLocaleString() + '.00';
+  }
+
+  function setPayMethod(m) {
+    ['card','paypal','bank'].forEach(function(id){
+      document.getElementById('pt-'+id).classList.remove('active');
+    });
+    document.getElementById('pt-'+m).classList.add('active');
+    var cf = document.getElementById('card-form');
+    var ap = document.getElementById('alt-pay-msg');
+    if (m === 'card') {
+      cf.style.display = 'block'; ap.style.display = 'none';
+    } else {
+      cf.style.display = 'none'; ap.style.display = 'block';
+      ap.textContent = m === 'paypal' ? 'You will be redirected to PayPal to complete your payment securely.' : 'Bank transfer details will be sent to your email after confirmation.';
+    }
+  }
+
+  function formatCard(el) {
+    var v = el.value.replace(/\D/g,'').substring(0,16);
+    el.value = v.replace(/(.{4})/g,'$1  ').trim();
+  }
+
+  var AIRTABLE_TOKEN = 'patHNy6qRf1WQraW7.84ca43e5176f773744b57ded9bd52d1dd000cf0843e73488eb258b76b802e099';
+  var AIRTABLE_BASE  = 'appICOp1blMFVaO9N';
+  var AIRTABLE_TABLE = 'Bookings';
+
+  function changeProperty() {
+    alert('In production, this would return to your search results to pick a different property.');
+  }
+
+  function getSelectedRoom() {
+    var sel = document.querySelector('.room-card.selected');
+    return sel ? { name: sel.getAttribute('data-name'), price: parseInt(sel.getAttribute('data-price')) } : { name: '', price: 0 };
+  }
+
+  function getNights() {
+    var ci = document.getElementById('checkin').value;
+    var co = document.getElementById('checkout-date').value;
+    if (!ci || !co) return 5;
+    var diff = (new Date(co) - new Date(ci)) / (1000 * 60 * 60 * 24);
+    return diff > 0 ? diff : 5;
+  }
+
+  function showToast(msg, type) {
+    var existing = document.getElementById('toast');
+    if (existing) existing.remove();
+    var t = document.createElement('div');
+    t.id = 'toast';
+    t.textContent = msg;
+    t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);padding:14px 24px;border-radius:10px;font-family:DM Sans,sans-serif;font-size:14px;font-weight:500;z-index:9999;box-shadow:0 4px 24px rgba(0,0,0,0.15);transition:opacity 0.4s;' +
+      (type === 'success' ? 'background:#2D6A4F;color:#fff;' : 'background:#9B2335;color:#fff;');
+    document.body.appendChild(t);
+    setTimeout(function(){ t.style.opacity = '0'; setTimeout(function(){ t.remove(); }, 400); }, 4000);
+  }
+
+  function setButtonLoading(loading) {
+    var btn = document.querySelector('.confirm-btn');
+    if (loading) {
+      btn.disabled = true;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="animation:spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Saving booking...';
+      btn.style.opacity = '0.7';
+    } else {
+      btn.disabled = false;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Confirm booking';
+      btn.style.opacity = '1';
+    }
+  }
+
+  async function confirmBooking() {
+    var firstName  = document.querySelector('input[placeholder="Alex"]').value.trim();
+    var lastName   = document.querySelector('input[placeholder="Morgan"]').value.trim();
+    var email      = document.querySelector('input[type="email"]').value.trim();
+    var phone      = document.querySelector('input[type="tel"]').value.trim();
+    var dest       = document.getElementById('dest').value.trim();
+    var checkin    = document.getElementById('checkin').value;
+    var checkout   = document.getElementById('checkout-date').value;
+    var guests     = document.querySelector('select').value;
+    var notes      = document.querySelector('textarea').value.trim();
+    var room       = getSelectedRoom();
+    var nights     = getNights();
+    var subtotal   = room.price * nights;
+    var tax        = Math.round(subtotal * 0.12);
+    var discount   = Math.round(subtotal * 0.05);
+    var total      = subtotal + tax - discount;
+
+    if (!firstName || !lastName) { showToast('Please enter your first and last name.', 'error'); return; }
+    if (!email || !email.includes('@')) { showToast('Please enter a valid email address.', 'error'); return; }
+    if (!checkin || !checkout) { showToast('Please select check-in and check-out dates.', 'error'); return; }
+
+    setButtonLoading(true);
+
+    var fields = {
+      'First Name':        firstName,
+      'Last Name':         lastName,
+      'Email':             email,
+      'Phone':             phone || '',
+      'Destination':       dest,
+      'Check In':          checkin,
+      'Check Out':         checkout,
+      'Room Type':         room.name,
+      'Guests':            parseInt(guests) || 2,
+      'Special Requests':  notes || '',
+      'Total Price':       total,
+      'Submitted At':      new Date().toISOString().split('T')[0]
+    };
+
+    try {
+      var res = await fetch('https://api.airtable.com/v0/' + AIRTABLE_BASE + '/' + encodeURIComponent(AIRTABLE_TABLE), {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + AIRTABLE_TOKEN,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ fields: fields })
+      });
+
+      var data = await res.json();
+
+      if (res.ok && data.id) {
+        showToast('Booking confirmed! Check your email for details. Reference: ' + data.id.slice(0,8).toUpperCase(), 'success');
+        document.querySelector('.confirm-btn').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Booking confirmed!';
+        document.querySelector('.confirm-btn').style.background = '#2D6A4F';
+        document.querySelector('.confirm-btn').disabled = true;
+      } else {
+        throw new Error(data.error && data.error.message ? data.error.message : 'Unexpected error');
+      }
+    } catch (err) {
+      setButtonLoading(false);
+      showToast('Something went wrong: ' + err.message + '. Please try again.', 'error');
+    }
+  }
+</script>
+<style>
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+</style>
+</body>
+</html>
